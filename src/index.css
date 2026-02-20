@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-slate-700;
+  }
+  
+  body {
+    @apply bg-background text-slate-100 font-body antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-xl;
+  }
+  
+  .glass-card-hover {
+    @apply glass-card hover:bg-slate-800/70 hover:border-slate-600/50 transition-all duration-300;
+  }
+  
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200 shadow-lg shadow-primary/25 hover:shadow-primary/40;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary hover:bg-secondary-dark text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200 shadow-lg shadow-secondary/25 hover:shadow-secondary/40;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-medium py-2 px-5 rounded-lg transition-all duration-200;
+  }
+  
+  .input-field {
+    @apply w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200;
+  }
+  
+  .card-gradient {
+    @apply bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-500;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Gradient background for hero */
+.hero-gradient {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+}
+
+/* Glowing effect */
+.glow {
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+}
