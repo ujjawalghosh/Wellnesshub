@@ -1,11 +1,26 @@
 import axios from 'axios'
 
+// Get API URL from environment variable or use proxy fallback
+// In development, requests to /api are proxied to the backend
+// In production, use the full API URL
+const getApiBaseURL = () => {
+  // Vite environment variable - use if explicitly set
+  const envApiUrl = import.meta.env.VITE_API_URL
+  
+  if (envApiUrl) {
+    return envApiUrl
+  }
+  
+  // Default: use Vite's proxy (requests to /api are proxied to localhost:5000)
+  return '/api'
+}
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: getApiBaseURL(),
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 10000 // 10 second timeout
+  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 10000 // 10 second timeout default
 })
 
 // Add token to requests
@@ -31,7 +46,7 @@ api.interceptors.response.use(
       console.error('Connection refused - Backend server is not running')
       
       // Create a more user-friendly error
-      const connectionError = new Error('Unable to connect to server. Please make sure the backend server is running on port 5000.')
+      const connectionError = new Error('Unable to connect to server. Please check your internet connection and try again.')
       connectionError.code = 'CONNECTION_ERROR'
       connectionError.isConnectionError = true
       
