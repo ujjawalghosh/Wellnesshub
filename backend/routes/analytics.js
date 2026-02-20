@@ -10,9 +10,13 @@ const User = require('../models/User');
 router.get('/progress', auth, async (req, res) => {
   try {
     const { period = 'week' } = req.query;
+    const userId = req.user._id;
+    
+    console.log('Analytics progress - User:', userId);
     
     // Get habits
-    const habits = await Habit.find({ userId: req.user._id, isActive: true });
+    const habits = await Habit.find({ userId: userId, isActive: true });
+    console.log('Analytics progress - Habits found:', habits.length);
     
     // Calculate date range
     const now = new Date();
@@ -30,7 +34,7 @@ router.get('/progress', auth, async (req, res) => {
     const completionData = [];
     for (let d = new Date(startDate); d <= now; d.setDate(d.getDate() + 1)) {
       const dayCompletions = habits.filter(h => 
-        h.completions.some(c => {
+        h.completions && h.completions.some(c => {
           const cDate = new Date(c.date);
           cDate.setHours(0, 0, 0, 0);
           const targetDate = new Date(d);
@@ -47,49 +51,53 @@ router.get('/progress', auth, async (req, res) => {
       });
     }
 
-    // Get challenges
+    // Get challenges - fix query to properly match participants
     const challenges = await Challenge.find({
-      'participants.user': req.user._id
+      participants: { $elemMatch: { user: userId } }
     });
+    console.log('Analytics progress - Challenges found:', challenges.length);
 
     const activeChallenges = challenges.filter(c => !c.isCompleted).length;
     const completedChallenges = challenges.filter(c => c.isCompleted).length;
 
     // Get user stats
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(userId);
+    console.log('Analytics progress - User found:', user ? user.name : 'NOT FOUND');
 
     res.json({
       completionData,
       habits: {
         total: habits.length,
-        totalStreak: habits.reduce((sum, h) => sum + h.streak, 0),
-        longestStreak: Math.max(...habits.map(h => h.longestStreak), 0)
+        totalStreak: habits.reduce((sum, h) => sum + (h.streak || 0), 0),
+        longestStreak: Math.max(...habits.map(h => h.longestStreak || 0), 0)
       },
       challenges: {
         active: activeChallenges,
         completed: completedChallenges
       },
       user: {
-        points: user.points,
-        level: user.level,
-        badges: user.badges
+        points: user?.points || 0,
+        level: user?.level || 1,
+        badges: user?.badges || []
       }
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Analytics progress error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
 // Get weekly report
 router.get('/weekly-report', auth, async (req, res) => {
   try {
+    const userId = req.user._id;
     const now = new Date();
     const weekAgo = new Date(now);
     weekAgo.setDate(now.getDate() - 7);
 
     // Get habits completed this week
-    const habits = await Habit.find({ userId: req.user._id, isActive: true });
+    const habits = await Habit.find({ userId: userId, isActive: true });
+    console.log('Analytics weekly-report - Habits found:', habits.length);
     
     let totalCompletions = 0;
     let perfectDays = 0;
@@ -97,7 +105,7 @@ router.get('/weekly-report', auth, async (req, res) => {
 
     for (let d = new Date(weekAgo); d <= now; d.setDate(d.getDate() + 1)) {
       const dayCompletions = habits.filter(h => 
-        h.completions.some(c => {
+        h.completions && h.completions.some(c => {
           const cDate = new Date(c.date);
           cDate.setHours(0, 0, 0, 0);
           const targetDate = new Date(d);
@@ -114,15 +122,16 @@ router.get('/weekly-report', auth, async (req, res) => {
       }
     }
 
-    // Get challenges
+    // Get challenges - fix query
     const challenges = await Challenge.find({
-      'participants.user': req.user._id,
+      participants: { $elemMatch: { user: userId } },
       createdAt: { $gte: weekAgo }
     });
+    console.log('Analytics weekly-report - Challenges found:', challenges.length);
 
     // Calculate achievements
     const achievements = [];
-    if (totalCompletions >= habits.length * 5) {
+    if (habits.length > 0 && totalCompletions >= habits.length * 5) {
       achievements.push('Consistency King');
     }
     if (perfectDays >= 5) {
@@ -154,16 +163,17 @@ router.get('/weekly-report', auth, async (req, res) => {
       daysData: daysWithCompletions
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Analytics weekly-report error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
 // Get streak calendar
 router.get('/streak-calendar', auth, async (req, res) => {
   try {
+    const userId = req.user._id;
     const { month, year } = req.query;
-    const habits = await Habit.find({ userId: req.user._id, isActive: true });
+    const habits = await Habit.find({ userId: userId, isActive: true });
     
     const now = new Date();
     const targetMonth = month ? parseInt(month) : now.getMonth();
@@ -177,7 +187,7 @@ router.get('/streak-calendar', auth, async (req, res) => {
       date.setHours(0, 0, 0, 0);
 
       const completions = habits.filter(h => 
-        h.completions.some(c => {
+        h.completions && h.completions.some(c => {
           const cDate = new Date(c.date);
           cDate.setHours(0, 0, 0, 0);
           return cDate.getTime() === date.getTime();
@@ -199,20 +209,21 @@ router.get('/streak-calendar', auth, async (req, res) => {
       calendar
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Analytics streak-calendar error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
 // Get dashboard summary
 router.get('/dashboard', auth, async (req, res) => {
   try {
-    console.log('Fetching dashboard for user:', req.user._id);
+    const userId = req.user._id;
+    console.log('Fetching dashboard for user:', userId);
     
-    const habits = await Habit.find({ userId: req.user._id, isActive: true });
+    const habits = await Habit.find({ userId: userId, isActive: true });
     console.log('Habits found:', habits.length);
     
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(userId);
     console.log('User found:', user ? user.name : 'NOT FOUND');
     
     // Today's habits
@@ -221,34 +232,34 @@ router.get('/dashboard', auth, async (req, res) => {
     
     const todayHabits = habits.map(h => ({
       ...h.toObject(),
-      completedToday: h.completions.some(c => {
+      completedToday: h.completions && h.completions.some(c => {
         const cDate = new Date(c.date);
         cDate.setHours(0, 0, 0, 0);
         return cDate.getTime() === today.getTime();
       })
     }));
 
-    // Active challenges
+    // Active challenges - fix query
     const challenges = await Challenge.find({
-      'participants.user': req.user._id,
+      participants: { $elemMatch: { user: userId } },
       isCompleted: false
     });
     console.log('Challenges found:', challenges.length);
 
     // Active plan
     const plan = await WellnessPlan.findOne({
-      userId: req.user._id,
+      userId: userId,
       isActive: true
     });
     console.log('Plan found:', plan ? 'yes' : 'no');
 
     res.json({
       user: {
-        name: user.name,
-        avatar: user.avatar,
-        points: user.points,
-        level: user.level,
-        badges: user.badges
+        name: user?.name || 'User',
+        avatar: user?.avatar || '',
+        points: user?.points || 0,
+        level: user?.level || 1,
+        badges: user?.badges || []
       },
       habits: {
         total: habits.length,

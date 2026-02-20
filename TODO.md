@@ -1,14 +1,19 @@
-# TODO - Profile Photo Change Fix
+# Mindful Breaks Timer Implementation
 
 ## Task
-Fix the profile photo change functionality in the Profile section.
+Add countdown timer functionality to Mindful Breaks page
 
-## Steps:
-- [ ] Add hidden file input for image upload in Profile.jsx
-- [ ] Add state for avatar loading/uploading in Profile.jsx  
-- [ ] Add click handler to camera button in Profile.jsx
-- [ ] Add function to handle image selection and upload via API
-- [ ] Update AuthContext with new avatar after successful upload
-- [ ] Show feedback messages to user
+## Plan
+- [x] Add timer state (timeLeft, isTimerRunning, currentStep)
+- [x] Create circular countdown timer UI in modal
+- [x] Add timer logic with useEffect/setInterval
+- [x] Add Play/Pause/Reset controls
+- [x] Add Skip button to end break early
+- [x] Only enable "Complete" button when timer finishes
 
-## Status: In Progress
+## Implementation Steps
+1. [x] Update MindfulBreaks.jsx with timer functionality
+   - Timer matches break duration (e.g., 3 min break = 3 min timer)
+   - Circular progress indicator
+   - Play/Pause/Reset/Skip controls
+   - Complete button enabled only after timer finishes
