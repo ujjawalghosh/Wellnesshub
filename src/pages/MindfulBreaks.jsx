@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Brain, 
   Clock, 
   Play, 
+  Pause,
+  RotateCcw,
   CheckCircle,
   Sparkles,
   Activity,
@@ -11,7 +13,8 @@ import {
   Eye,
   Footprints,
   Heart,
-  Leaf
+  Leaf,
+  SkipForward
 } from 'lucide-react'
 import api from '../utils/api'
 
@@ -31,10 +34,44 @@ export default function MindfulBreaks() {
   const [selectedBreak, setSelectedBreak] = useState(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [loading, setLoading] = useState(true)
+  
+  // Timer states
+  const [timeLeft, setTimeLeft] = useState(0)
+  const [isTimerRunning, setIsTimerRunning] = useState(false)
+  const [timerCompleted, setTimerCompleted] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0)
+  const timerRef = useRef(null)
 
   useEffect(() => {
     fetchBreaks()
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
   }, [])
+
+  // Timer logic
+  useEffect(() => {
+    if (isTimerRunning && timeLeft > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current)
+            setIsTimerRunning(false)
+            setTimerCompleted(true)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [isTimerRunning, timeLeft])
 
   const fetchBreaks = async () => {
     try {
@@ -64,6 +101,7 @@ export default function MindfulBreaks() {
         duration: selectedBreak?.duration
       })
       setIsPlaying(false)
+      resetTimer()
     } catch (error) {
       console.error('Error completing break:', error)
     }
@@ -71,7 +109,11 @@ export default function MindfulBreaks() {
 
   const startBreak = (breakItem) => {
     setSelectedBreak(breakItem)
+    setTimeLeft(breakItem.duration * 60)
     setIsPlaying(true)
+    setTimerCompleted(false)
+    setCurrentStep(0)
+    setIsTimerRunning(false)
   }
 
   const filterByType = async (type) => {
@@ -82,6 +124,56 @@ export default function MindfulBreaks() {
       console.error('Error filtering breaks:', error)
     }
   }
+
+  const resetTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+    }
+    setTimeLeft(selectedBreak ? selectedBreak.duration * 60 : 0)
+    setIsTimerRunning(false)
+    setTimerCompleted(false)
+    setCurrentStep(0)
+  }
+
+  // Skip - end break early
+  const handleSkip = async () => {
+    try {
+      const elapsed = selectedBreak ? selectedBreak.duration * 60 - timeLeft : 0
+      const partialDuration = Math.max(1, Math.round(elapsed / 60))
+      
+      await api.post('/breaks/complete', {
+        breakId: selectedBreak?.id,
+        duration: partialDuration
+      })
+      setIsPlaying(false)
+      resetTimer()
+    } catch (error) {
+      console.error('Error skipping break:', error)
+      setIsPlaying(false)
+      resetTimer()
+    }
+  }
+
+  const toggleTimer = () => {
+    if (timerCompleted) return
+    setIsTimerRunning(!isTimerRunning)
+  }
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const getProgress = () => {
+    if (!selectedBreak) return 0
+    const totalSeconds = selectedBreak.duration * 60
+    return ((totalSeconds - timeLeft) / totalSeconds) * 100
+  }
+
+  const radius = 90
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (getProgress() / 100) * circumference
 
   if (loading) {
     return (
@@ -174,7 +266,6 @@ export default function MindfulBreaks() {
                 {breakItem.instructions?.[0]}
               </p>
 
-              {/* Benefits */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {breakItem.benefits?.slice(0, 2).map((benefit, i) => (
                   <span key={i} className="text-xs px-2 py-1 bg-slate-800 rounded-full text-slate-400">
@@ -194,7 +285,7 @@ export default function MindfulBreaks() {
         })}
       </div>
 
-      {/* Break Player Modal */}
+      {/* Break Player Modal with Timer */}
       <AnimatePresence>
         {isPlaying && selectedBreak && (
           <motion.div
@@ -221,6 +312,76 @@ export default function MindfulBreaks() {
                   <Clock className="w-4 h-4" />
                   <span>{selectedBreak.duration} minutes</span>
                 </div>
+              </div>
+
+              {/* Circular Timer */}
+              <div className="flex justify-center mb-6">
+                <div className="relative w-48 h-48">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r={radius}
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="transparent"
+                      className="text-slate-700"
+                    />
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r={radius}
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="transparent"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeDashoffset}
+                      strokeLinecap="round"
+                      className={`${timerCompleted ? 'text-green-500' : 'text-primary'} transition-all duration-1000`}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    {timerCompleted ? (
+                      <>
+                        <CheckCircle className="w-12 h-12 text-green-500 mb-2" />
+                        <span className="text-green-500 font-semibold">Complete!</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-4xl font-bold font-mono">{formatTime(timeLeft)}</span>
+                        <span className="text-slate-400 text-sm">remaining</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Timer Controls */}
+              <div className="flex justify-center gap-4 mb-6">
+                <button
+                  onClick={toggleTimer}
+                  disabled={timerCompleted}
+                  className={`p-3 rounded-full ${timerCompleted ? 'bg-slate-700 cursor-not-allowed' : 'bg-primary hover:bg-primary/80'} transition-colors`}
+                >
+                  {isTimerRunning ? (
+                    <Pause className="w-6 h-6 text-white" />
+                  ) : (
+                    <Play className="w-6 h-6 text-white" />
+                  )}
+                </button>
+                <button
+                  onClick={resetTimer}
+                  className="p-3 rounded-full bg-slate-700 hover:bg-slate-600 transition-colors"
+                >
+                  <RotateCcw className="w-6 h-6 text-white" />
+                </button>
+                <button
+                  onClick={handleSkip}
+                  className="px-4 py-3 rounded-full bg-amber-600 hover:bg-amber-500 transition-colors flex items-center gap-2"
+                >
+                  <SkipForward className="w-5 h-5 text-white" />
+                  <span className="text-white text-sm font-medium">Skip</span>
+                </button>
               </div>
 
               {/* Instructions */}
@@ -259,14 +420,18 @@ export default function MindfulBreaks() {
               {/* Actions */}
               <div className="flex gap-3">
                 <button
-                  onClick={() => setIsPlaying(false)}
+                  onClick={() => {
+                    setIsPlaying(false)
+                    resetTimer()
+                  }}
                   className="btn-outline flex-1"
                 >
                   Close
                 </button>
                 <button
                   onClick={handleComplete}
-                  className="btn-primary flex-1 flex items-center justify-center gap-2"
+                  disabled={!timerCompleted}
+                  className={`btn-primary flex-1 flex items-center justify-center gap-2 ${!timerCompleted ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <CheckCircle className="w-5 h-5" /> Complete
                 </button>
