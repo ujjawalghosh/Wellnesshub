@@ -1,19 +1,18 @@
-# Mindful Breaks Timer Implementation
+# TODO: Fix Frontend-Only Authentication Issue
 
-## Task
-Add countdown timer functionality to Mindful Breaks page
+## Task: Fix WellnessHub frontend-only repo authentication
 
-## Plan
-- [x] Add timer state (timeLeft, isTimerRunning, currentStep)
-- [x] Create circular countdown timer UI in modal
-- [x] Add timer logic with useEffect/setInterval
-- [x] Add Play/Pause/Reset controls
-- [x] Add Skip button to end break early
-- [x] Only enable "Complete" button when timer finishes
+### Issues Identified:
+1. Frontend has no .env configuration for backend API URL
+2. api.js uses hardcoded relative path without fallback
+3. Users don't know backend needs to run separately
 
-## Implementation Steps
-1. [x] Update MindfulBreaks.jsx with timer functionality
-   - Timer matches break duration (e.g., 3 min break = 3 min timer)
-   - Circular progress indicator
-   - Play/Pause/Reset/Skip controls
-   - Complete button enabled only after timer finishes
+### Plan:
+- [x] 1. Create frontend/.env.example with proper Vite environment variables
+- [x] 2. Update frontend/src/utils/api.js to use VITE_API_URL environment variable
+- [x] 3. Update frontend/vite.config.js to handle proxy configuration via env
+- [x] 4. Verify the changes work correctly
+
+### Dependencies:
+- Backend must be running on port 5000
+- MongoDB must be accessible

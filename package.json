@@ -8,7 +8,9 @@
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "start:backend": "cd backend && npm start",
-    "build:frontend": "cd frontend && npm run build"
+    "build:frontend": "cd frontend && npm run build",
+    "deploy": "npm run build:frontend",
+    "deploy:vercel": "cd frontend && npx vercel --prod"
   },
   "dependencies": {
     "openai": "^6.22.0",
