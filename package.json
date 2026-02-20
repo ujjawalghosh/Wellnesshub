@@ -1,8 +1,10 @@
 {
-  "name": "wellnesshub",
+  "name": "wellnesshub-frontend",
+  "private": true,
   "version": "1.0.0",
-  "description": "WellnessHub - Full Stack Application",
+  "type": "module",
   "scripts": {
+<<<<<<< HEAD
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && npm run dev",
@@ -11,9 +13,29 @@
     "build:frontend": "cd frontend && npm run build",
     "deploy": "npm run build:frontend",
     "deploy:vercel": "cd frontend && npx vercel --prod"
+=======
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+>>>>>>> 03eb63a0750e95ba90c9d992c7d9a0ca54c937a1
   },
   "dependencies": {
-    "openai": "^6.22.0",
-    "concurrently": "^8.2.2"
+    "axios": "^1.6.2",
+    "framer-motion": "^10.16.16",
+    "jspdf": "^2.5.1",
+    "lucide-react": "^0.303.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1",
+    "recharts": "^2.10.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "vite": "^5.0.10"
   }
 }
