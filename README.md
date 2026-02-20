@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # WellnessHub - Your Personal Wellness Companion
 
 A comprehensive, AI-powered wellness platform built with React, Node.js, and MongoDB.
@@ -271,3 +272,7 @@ This project is licensed under the MIT License.
 ---
 
 Built with ❤️ for your wellness journey
+=======
+# Wellnesshub
+WellnessHub is a professionally designed, responsive frontend template built for modern health and wellness platforms. Crafted with premium UI/UX standards, it features modular sections, smooth animations, and conversion‑optimized layouts. Perfect for startups, SaaS founders, and indie makers looking to launch a polished wellness app quickly.
+>>>>>>> acb07592c5e8fd41a9725beada0d863a40aba8cb
