@@ -16,8 +16,7 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: backendUrl,
           changeOrigin: true,
-          // Only configure secure: false for localhost
-          secure: !backendUrl.includes('localhost')
+          secure: false
         }
       }
     }
