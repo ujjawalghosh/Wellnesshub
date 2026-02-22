@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 
 // Import routes
@@ -13,8 +14,26 @@ const analyticsRoutes = require('./routes/analytics');
 
 const app = express();
 
+// Track MongoDB connection status
+let isDBConnected = false;
+
 // Connect to MongoDB
 connectDB();
+
+// Monitor MongoDB connection
+mongoose.connection.on('connected', () => {
+  isDBConnected = true;
+  console.log('MongoDB connection established');
+});
+
+mongoose.connection.on('disconnected', () => {
+  isDBConnected = false;
+  console.log('MongoDB connection lost');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB error:', err.message);
+});
 
 // Middleware - Allow all origins for development
 app.use(cors());
@@ -30,7 +49,11 @@ app.use('/api/analytics', analyticsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'WellnessHub API is running' });
+  res.json({ 
+    status: 'ok', 
+    message: 'WellnessHub API is running',
+    database: isDBConnected ? 'connected' : 'disconnected'
+  });
 });
 
 // Error handling middleware
