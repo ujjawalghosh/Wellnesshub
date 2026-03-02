@@ -1,19 +1,16 @@
 import axios from 'axios'
 
-// Use localhost for local development, Render for production
-// Check if we're in development mode (not on production domain)
+// Check if we're in development mode (localhost)
 const isLocalhost = typeof window !== 'undefined' && 
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
 
-// Default to localhost:5000 for local development
-const LOCAL_BACKEND_URL = 'http://localhost:5000'
-const RENDER_BACKEND_URL = 'https://wellnesshub-pro.onrender.com'
-
-// Use localhost URL when running on localhost, otherwise use Render
-const BASE_URL = isLocalhost ? LOCAL_BACKEND_URL : RENDER_BACKEND_URL
+// Backend URL - use localhost for development, use relative URL for production (monorepo)
+const BACKEND_URL = isLocalhost 
+  ? 'http://localhost:5000' 
+  : ''  // Empty string = same domain in production
 
 const api = axios.create({
-  baseURL: `${BASE_URL}/api`,
+  baseURL: `${BACKEND_URL}/api`,
   headers: {
     'Content-Type': 'application/json'
   },
@@ -38,6 +35,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle connection errors with more informative messages
     if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
       console.error('Connection refused - Backend server is not running')
       
@@ -66,5 +64,16 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+// Export health check function
+export const checkServerHealth = async () => {
+  try {
+    const response = await api.get('/health')
+    return response.data
+  } catch (error) {
+    console.error('Server health check failed:', error.message)
+    return null
+  }
+}
 
 export default api
