@@ -26,3 +26,5 @@ Thumbs.db
 # IDE/editor configs
 .vscode/
 .idea/
+.vercel
+.env*.local

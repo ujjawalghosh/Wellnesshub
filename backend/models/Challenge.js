@@ -1,5 +1,25 @@
 const mongoose = require('mongoose');
 
+const participantSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  progress: {
+    type: Number,
+    default: 0
+  },
+  joinedAt: {
+    type: Date,
+    default: Date.now
+  },
+  completed: {
+    type: Boolean,
+    default: false
+  }
+}, { _id: false });
+
 const challengeSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -8,12 +28,12 @@ const challengeSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true
+    trim: true
   },
   type: {
     type: String,
-    enum: ['steps', 'meditation', 'water', 'eating', 'workout', 'custom'],
-    required: true
+    enum: ['fitness', 'mental', 'nutrition', 'social', 'learning', 'other'],
+    default: 'other'
   },
   goal: {
     type: Number,
@@ -24,7 +44,7 @@ const challengeSchema = new mongoose.Schema({
     default: 'points'
   },
   duration: {
-    type: Number, // in days
+    type: Number,
     required: true
   },
   creator: {
@@ -32,27 +52,10 @@ const challengeSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  participants: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    progress: {
-      type: Number,
-      default: 0
-    },
-    joinedAt: {
-      type: Date,
-      default: Date.now
-    },
-    completed: {
-      type: Boolean,
-      default: false
-    }
-  }],
+  participants: [participantSchema],
   startDate: {
     type: Date,
-    required: true
+    default: Date.now
   },
   endDate: {
     type: Date,
@@ -62,33 +65,34 @@ const challengeSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  winner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: null
-  },
-  drawHash: {
-    type: String,
-    default: null
-  },
-  drawTimestamp: {
-    type: Date,
-    default: null
-  },
   isCompleted: {
     type: Boolean,
     default: false
   },
   prize: {
     type: String,
-    default: ''
+    trim: true
+  },
+  winner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  drawHash: {
+    type: String
+  },
+  drawTimestamp: {
+    type: Date
   }
 }, {
   timestamps: true
 });
 
-// Index for searching
-challengeSchema.index({ type: 1, isPublic: 1 });
+// Index for better query performance
+challengeSchema.index({ creator: 1 });
 challengeSchema.index({ participants: 1 });
+challengeSchema.index({ endDate: 1 });
+challengeSchema.index({ isPublic: 1, isCompleted: 1 });
 
-module.exports = mongoose.model('Challenge', challengeSchema);
+const Challenge = mongoose.model('Challenge', challengeSchema);
+
+module.exports = Challenge;

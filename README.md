@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # WellnessHub - Your Personal Wellness Companion
 
 A comprehensive, AI-powered wellness platform built with React, Node.js, and MongoDB.
@@ -69,7 +68,60 @@ A comprehensive, AI-powered wellness platform built with React, Node.js, and Mon
 - bcryptjs for password hashing
 - Express-validator for validation
 
-## Getting Started
+## 🚀 Vercel Deployment
+
+### Quick Deploy Links
+- **Frontend:** Deploy to Vercel directly from the `frontend` folder
+- **Backend:** Deploy to Vercel directly from the `backend` folder
+
+### Step 1: Deploy Backend
+
+1. Go to [Vercel](https://vercel.com) and sign in
+2. Click "Add New..." → "Project"
+3. Import your GitHub repository
+4. Select the `backend` folder
+5. Configure Environment Variables:
+
+| Variable | Value |
+|----------|-------|
+| `MONGODB_URI` | Your MongoDB Atlas connection string |
+| `JWT_SECRET` | Any random string (e.g., `wellnesshub-secret-2024`) |
+| `EMAIL_USER` | Your Gmail address for OTP |
+| `EMAIL_PASS` | Your Gmail App Password |
+| `OPENAI_API_KEY` | Your OpenAI API key (optional) |
+
+6. Click "Deploy"
+
+### Step 2: Deploy Frontend
+
+1. In Vercel, create another project for the `frontend` folder
+2. Configure Environment Variables (optional):
+   | Variable | Value |
+   |----------|-------|
+   | `VITE_API_URL` | Your backend URL (e.g., https://backend-xxx.vercel.app) |
+
+3. The frontend will automatically route `/api/*` requests to your backend
+4. Click "Deploy"
+
+### Getting MongoDB Atlas URI
+
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a free account
+3. Create a free cluster
+4. Create a database user
+5. Click "Connect" → "Connect your application"
+6. Copy the connection string
+7. Replace `<password>` with your database password
+
+### Getting Gmail App Password
+
+1. Go to your Google Account
+2. Enable 2-Factor Authentication
+3. Go to Security → App passwords
+4. Create a new app password for "Mail"
+5. Use that password in `EMAIL_PASS`
+
+## Local Development
 
 ### Prerequisites
 - Node.js (v18+)
@@ -102,7 +154,6 @@ npm install
 
 Create a `.env` file in the backend directory:
 ```
-env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/wellnesshub
 JWT_SECRET=your_secret_key_here
@@ -112,7 +163,6 @@ NODE_ENV=development
 5. **Start MongoDB**
 ```
 bash
-# If using local MongoDB
 mongod
 ```
 
@@ -235,21 +285,18 @@ The FairDraw system ensures transparent and fair random winner selection using S
 5. Use hash to deterministically select winner
 6. Display hash for transparency and verification
 
-## Deployment
+## Troubleshooting
 
-### Frontend (Vercel/Netlify)
-```
-bash
-cd frontend
-npm run build
-```
+### "Unable to connect to server" error
+- Make sure MongoDB URI is set in Vercel backend environment variables
+- Wait 30 seconds for the backend to restart after adding environment variables
 
-### Backend (Render/Heroku)
-```
-bash
-cd backend
-npm start
-```
+### "Operation users.findOne() buffering timed out"
+- MongoDB is not connected. Check your MONGODB_URI in Vercel
+
+### 401 Unauthorized errors
+- Clear browser localStorage and try again
+- Make sure you're using the latest deployed version
 
 ## Contributing
 
@@ -272,7 +319,3 @@ This project is licensed under the MIT License.
 ---
 
 Built with ❤️ for your wellness journey
-=======
-# Wellnesshub
-WellnessHub is a professionally designed, responsive frontend template built for modern health and wellness platforms. Crafted with premium UI/UX standards, it features modular sections, smooth animations, and conversion‑optimized layouts. Perfect for startups, SaaS founders, and indie makers looking to launch a polished wellness app quickly.
->>>>>>> acb07592c5e8fd41a9725beada0d863a40aba8cb

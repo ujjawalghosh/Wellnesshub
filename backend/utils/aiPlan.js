@@ -1,8 +1,15 @@
-const OpenAI = require('openai');
+let openai = null;
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+// Lazy initialization of OpenAI - only when actually needed
+function getOpenAI() {
+  if (!openai && process.env.OPENAI_API_KEY) {
+    const OpenAI = require('openai');
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
+  }
+  return openai;
+}
 
 /**
  * AI-Powered Wellness Plan Generator
