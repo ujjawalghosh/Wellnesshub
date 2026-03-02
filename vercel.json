@@ -6,22 +6,18 @@
       "use": "@vercel/node"
     },
     {
-      "src": "frontend",
-      "use": "@vercel/static-build",
-      "config": {
-        "buildCommand": "cd frontend && npm run build",
-        "outputDirectory": "dist"
-      }
+      "src": "frontend/dist",
+      "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/backend/server.js"
+      "source": "/api/(.*)",
+      "destination": "/backend/server.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/frontend/dist/index.html"
+      "source": "/(.*)",
+      "destination": "/frontend/dist/index.html"
     }
   ]
 }
