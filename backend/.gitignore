@@ -28,3 +28,9 @@ Thumbs.db
 .idea/
 .vercel
 .env*.local
+
+# Ignore environment files
+.env
+*.env
+backend/.env.prod
+update_env.ps1
