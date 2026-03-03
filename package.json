@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
@@ -12,8 +15,5 @@
     "build:frontend": "cd frontend && npm run build",
     "deploy": "npm run build:frontend",
     "deploy:vercel": "cd frontend && npx vercel --prod"
-  },
-  "devDependencies": {
-    "concurrently": "^9.2.1"
   }
 }

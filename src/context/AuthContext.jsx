@@ -35,6 +35,7 @@ export function AuthProvider({ children }) {
       const response = await api.get('/auth/me')
       setUser(response.data)
     } catch (error) {
+      console.log('Auth check failed - clearing invalid token')
       localStorage.removeItem('token')
     } finally {
       setLoading(false)
