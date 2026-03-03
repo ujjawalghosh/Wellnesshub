@@ -53,12 +53,12 @@ router.get('/progress', auth, async (req, res) => {
 
     // Get challenges - fix query to properly match participants
     const challenges = await Challenge.find({
-      participants: { $elemMatch: { user: userId } }
+      'participants.user': userId
     });
     console.log('Analytics progress - Challenges found:', challenges.length);
 
-    const activeChallenges = challenges.filter(c => !c.isCompleted).length;
-    const completedChallenges = challenges.filter(c => c.isCompleted).length;
+    const activeChallenges = challenges.filter(c => c.status === 'active').length;
+    const completedChallenges = challenges.filter(c => c.status === 'completed').length;
 
     // Get user stats
     const user = await User.findById(userId);
@@ -124,7 +124,7 @@ router.get('/weekly-report', auth, async (req, res) => {
 
     // Get challenges - fix query
     const challenges = await Challenge.find({
-      participants: { $elemMatch: { user: userId } },
+      'participants.user': userId,
       createdAt: { $gte: weekAgo }
     });
     console.log('Analytics weekly-report - Challenges found:', challenges.length);
@@ -155,8 +155,8 @@ router.get('/weekly-report', auth, async (req, res) => {
       },
       challenges: {
         joined: challenges.length,
-        active: challenges.filter(c => !c.isCompleted).length,
-        completed: challenges.filter(c => c.isCompleted).length
+        active: challenges.filter(c => c.status === 'active').length,
+        completed: challenges.filter(c => c.status === 'completed').length
       },
       achievements,
       motivation: getMotivationalMessage(completionRate, perfectDays),
@@ -241,8 +241,8 @@ router.get('/dashboard', auth, async (req, res) => {
 
     // Active challenges - fix query
     const challenges = await Challenge.find({
-      participants: { $elemMatch: { user: userId } },
-      isCompleted: false
+      'participants.user': userId,
+      status: 'active'
     });
     console.log('Challenges found:', challenges.length);
 

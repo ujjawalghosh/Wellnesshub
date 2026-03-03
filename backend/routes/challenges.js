@@ -14,9 +14,9 @@ router.get('/', auth, async (req, res) => {
     if (type) query.type = type;
     if (status === 'active') {
       query.endDate = { $gte: new Date() };
-      query.isCompleted = false;
+      query.status = 'active';
     } else if (status === 'completed') {
-      query.isCompleted = true;
+      query.status = 'completed';
     }
 
     const challenges = await Challenge.find(query)
@@ -226,7 +226,7 @@ router.post('/:id/fairdraw', auth, async (req, res) => {
     challenge.winner = winner;
     challenge.drawHash = hash;
     challenge.drawTimestamp = new Date();
-    challenge.isCompleted = true;
+    challenge.status = 'completed';
 
     await challenge.save();
 

@@ -2,9 +2,20 @@
 
 A comprehensive, AI-powered wellness platform built with React, Node.js, and MongoDB.
 
-![WellnessHub](https://img.shields.io/badge/WellnessHub-v1.0.0-green)
+![WellnessHub](https://img.shields.io/badge/WellnessHub-v2.0.0-green)
 ![React](https://img.shields.io/badge/React-18-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-green)
+
+## ✨ What's New in v2.0
+
+### Additional Features Added:
+- 💧 **Water Intake Tracker** - Track daily water consumption with visual progress, streaks, and goals
+- 😴 **Sleep Tracker** - Log sleep quality, duration, and get weekly insights
+- 😊 **Mood Tracker** - Daily mood logging with emotions, energy levels, and trends
+- ⏱️ **Pomodoro Timer** - Focus timer with presets and productivity tracking
+- 💬 **Daily Affirmations** - Inspirational quotes with categories
+
+---
 
 ## Features
 
@@ -36,11 +47,54 @@ A comprehensive, AI-powered wellness platform built with React, Node.js, and Mon
 - **FairDraw** - Transparent random winner selection using SHA-256 hash
 - Multiple challenge types (steps, meditation, water, eating, workout)
 
+### 💧 Water Intake Tracker (NEW!)
+- Visual progress circle with percentage
+- Quick add buttons (100ml, 200ml, 250ml, 500ml)
+- Custom amount input
+- Daily goal setting (1.5L - 3L)
+- Streak tracking
+- History log
+
+### 😴 Sleep Tracker (NEW!)
+- Log bedtime and wake time
+- Sleep quality rating (1-5)
+- Weekly average stats
+- Sleep history calendar
+- Sleep tips and recommendations
+
+### 😊 Mood Tracker (NEW!)
+- Emoji-based mood selection
+- Energy level tracking
+- Stress level tracking
+- Activity logging
+- Gratitude entries
+- Mood trends and insights
+- Calendar view
+
+### ⏱️ Pomodoro Timer (NEW!)
+- Preset modes: Work (25min), Study (45min), Quick (15min)
+- Short and long break modes
+- Session tracking
+- Daily/weekly stats
+- Productivity streaks
+
+### 💬 Daily Affirmations (NEW!)
+- Daily rotating inspiration
+- 10 categories (motivation, health, self-love, success, gratitude, etc.)
+- Random affirmation generator
+- Share functionality
+- Featured affirmations
+
 ### 📊 Analytics Dashboard
 - Progress charts and visualizations
 - Weekly reports with insights
 - Streak calendar
 - Achievement tracking
+
+### 👥 Friends & Social (NEW!)
+- Add friends
+- Leaderboard competition
+- Friend progress tracking
 
 ### 📱 Mobile-First Design
 - Responsive layout for all devices
@@ -190,23 +244,45 @@ WellnessHub/
 ├── backend/
 │   ├── config/
 │   │   └── db.js           # MongoDB connection
+│   ├── data/
+│   │   └── affirmations.js # Daily affirmations data
 │   ├── middleware/
 │   │   └── auth.js         # JWT authentication
 │   ├── models/
 │   │   ├── User.js         # User schema
-│   │   ├── WellnessPlan.js # Wellness plan schema
+│   │   ├── WellnessPlan.js  # Wellness plan schema
 │   │   ├── Habit.js        # Habit schema
-│   │   └── Challenge.js    # Challenge schema
+│   │   ├── Challenge.js     # Challenge schema
+│   │   ├── WaterIntake.js  # Water intake schema (NEW!)
+│   │   ├── SleepLog.js     # Sleep log schema (NEW!)
+│   │   ├── MoodLog.js      # Mood log schema (NEW!)
+│   │   ├── BodyMetrics.js  # Body metrics schema (NEW!)
+│   │   ├── NutritionLog.js # Nutrition log schema (NEW!)
+│   │   ├── PomodoroSession.js # Pomodoro schema (NEW!)
+│   │   ├── MeditationSession.js # Meditation schema (NEW!)
+│   │   ├── Friend.js       # Friends schema (NEW!)
+│   │   ├── ProgressPhoto.js # Progress photos schema (NEW!)
+│   │   └── DailyAffirmation.js # Affirmations schema (NEW!)
 │   ├── routes/
 │   │   ├── auth.js         # Auth routes
-│   │   ├── plans.js        # Wellness plan routes
+│   │   ├── plans.js       # Wellness plan routes
 │   │   ├── habits.js       # Habit routes
 │   │   ├── challenges.js   # Challenge routes
 │   │   ├── breaks.js       # Mindful break routes
-│   │   └── analytics.js    # Analytics routes
+│   │   ├── analytics.js    # Analytics routes
+│   │   ├── water.js        # Water intake routes (NEW!)
+│   │   ├── sleep.js        # Sleep routes (NEW!)
+│   │   ├── mood.js         # Mood routes (NEW!)
+│   │   ├── body.js         # Body metrics routes (NEW!)
+│   │   ├── nutrition.js   # Nutrition routes (NEW!)
+│   │   ├── pomodoro.js     # Pomodoro routes (NEW!)
+│   │   ├── meditation.js   # Meditation routes (NEW!)
+│   │   ├── friends.js      # Friends routes (NEW!)
+│   │   └── affirmations.js # Affirmations routes (NEW!)
 │   ├── utils/
 │   │   ├── fairdraw.js     # FairDraw SHA-256 implementation
-│   │   └── aiPlan.js       # AI plan generation
+│   │   ├── aiPlan.js       # AI plan generation
+│   │   └── email.js        # Email utilities
 │   ├── server.js           # Express server
 │   └── package.json
 ├── frontend/
@@ -215,11 +291,15 @@ WellnessHub/
 │   │   ├── components/
 │   │   │   ├── Layout.jsx
 │   │   │   ├── Sidebar.jsx
-│   │   │   └── Header.jsx
+│   │   │   ├── Header.jsx
+│   │   │   ├── Toast.jsx
+│   │   │   └── ErrorBoundary.jsx
 │   │   ├── pages/
 │   │   │   ├── Landing.jsx
 │   │   │   ├── Login.jsx
 │   │   │   ├── Register.jsx
+│   │   │   ├── OTPLogin.jsx
+│   │   │   ├── EmailVerify.jsx
 │   │   │   ├── Onboarding.jsx
 │   │   │   ├── Dashboard.jsx
 │   │   │   ├── WellnessPlan.jsx
@@ -228,7 +308,12 @@ WellnessHub/
 │   │   │   ├── MindfulBreaks.jsx
 │   │   │   ├── Analytics.jsx
 │   │   │   ├── Achievements.jsx
-│   │   │   └── Profile.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   ├── WaterTracker.jsx    (NEW!)
+│   │   │   ├── SleepTracker.jsx     (NEW!)
+│   │   │   ├── MoodTracker.jsx      (NEW!)
+│   │   │   ├── PomodoroTimer.jsx    (NEW!)
+│   │   │   └── DailyAffirmation.jsx (NEW!)
 │   │   ├── context/
 │   │   │   └── AuthContext.jsx
 │   │   ├── utils/
@@ -240,7 +325,8 @@ WellnessHub/
 │   ├── vite.config.js
 │   ├── tailwind.config.js
 │   └── package.json
-└── SPEC.md
+├── SPEC.md
+└── README.md
 ```
 
 ## API Endpoints
@@ -269,6 +355,40 @@ WellnessHub/
 - `GET /api/challenges/:id` - Get challenge
 - `POST /api/challenges/:id/join` - Join challenge
 - `POST /api/challenges/:id/fairdraw` - Run FairDraw
+
+### Water Tracking (NEW!)
+- `GET /api/water/today` - Get today's water intake
+- `POST /api/water/add` - Add water intake
+- `PUT /api/water/goal` - Update daily goal
+- `GET /api/water/history` - Get water history
+
+### Sleep Tracking (NEW!)
+- `GET /api/sleep` - Get sleep logs
+- `POST /api/sleep` - Log sleep
+- `GET /api/sleep/stats/weekly` - Get weekly stats
+
+### Mood Tracking (NEW!)
+- `GET /api/mood` - Get mood logs
+- `POST /api/mood` - Log mood
+- `GET /api/mood/trends` - Get mood trends
+- `GET /api/mood/calendar` - Get calendar view
+
+### Pomodoro (NEW!)
+- `GET /api/pomodoro/today` - Get today's sessions
+- `POST /api/pomodoro/start` - Start session
+- `POST /api/pomodoro/end/:id` - End session
+- `GET /api/pomodoro/stats/weekly` - Get weekly stats
+
+### Affirmations (NEW!)
+- `GET /api/affirmations/daily` - Get daily affirmation
+- `GET /api/affirmations/random` - Get random affirmation
+- `GET /api/affirmations/category/:category` - Get by category
+
+### Friends (NEW!)
+- `GET /api/friends` - Get friends list
+- `POST /api/friends/request` - Send friend request
+- `POST /api/friends/accept/:id` - Accept request
+- `GET /api/friends/leaderboard` - Get leaderboard
 
 ### Analytics
 - `GET /api/analytics/progress` - Get progress data
@@ -319,3 +439,4 @@ This project is licensed under the MIT License.
 ---
 
 Built with ❤️ for your wellness journey
+

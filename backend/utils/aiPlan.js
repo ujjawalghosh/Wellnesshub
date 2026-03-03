@@ -76,7 +76,13 @@ async function generateWellnessPlan(goals, fitnessLevel = 'beginner') {
   CRITICAL: Return ONLY valid JSON, no markdown code blocks, no explanations, no text before or after the JSON. Start your response with { and end with }`;
 
   try {
-    const completion = await openai.chat.completions.create({
+    const openaiInstance = getOpenAI();
+    if (!openaiInstance) {
+      console.log('OpenAI not initialized, using mock implementation');
+      return generateMockWellnessPlan(goals, fitnessLevel);
+    }
+    
+    const completion = await openaiInstance.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {

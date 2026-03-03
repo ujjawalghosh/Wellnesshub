@@ -116,14 +116,12 @@ router.post('/:id/complete', auth, async (req, res) => {
       return res.status(404).json({ message: 'Habit not found' });
     }
 
-    // Check if already completed today
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Check if already completed today - simplified date comparison
+    const todayStr = new Date().toISOString().split('T')[0];
     
-    const alreadyCompleted = habit.completions.some(completion => {
-      const completionDate = new Date(completion.date);
-      completionDate.setHours(0, 0, 0, 0);
-      return completionDate.getTime() === today.getTime();
+    const alreadyCompleted = habit.completions && habit.completions.some(completion => {
+      const completionDateStr = new Date(completion.date).toISOString().split('T')[0];
+      return completionDateStr === todayStr;
     });
 
     if (alreadyCompleted) {
@@ -131,14 +129,32 @@ router.post('/:id/complete', auth, async (req, res) => {
     }
 
     // Add completion
-    habit.completions.push({
+    const newCompletion = {
       date: new Date(),
       completed: true,
       notes: req.body.notes || ''
-    });
+    };
+    
+    if (!habit.completions) {
+      habit.completions = [];
+    }
+    habit.completions.push(newCompletion);
 
-    // Update streak
-    habit.updateStreak();
+    // For first completion, set streak to 1
+    if (habit.completions.length === 1) {
+      habit.streak = 1;
+    } else {
+      // Update streak for subsequent completions
+      habit.updateStreak();
+    }
+
+    // Update longest streak if needed
+    if (habit.streak > habit.longestStreak) {
+      habit.longestStreak = habit.streak;
+    }
+    
+    // Update total completions
+    habit.totalCompletions = habit.completions.length;
 
     await habit.save();
 
@@ -150,16 +166,17 @@ router.post('/:id/complete', auth, async (req, res) => {
       { new: true }
     );
 
-    // Check for badges
+    // Check for badges (badges are stored as objects with name property)
     const newBadges = [];
-    if (habit.streak >= 7 && !user.badges.includes('streak_7')) {
-      newBadges.push('streak_7');
+    const userBadgeNames = user.badges.map(b => b.name);
+    if (habit.streak >= 7 && !userBadgeNames.includes('streak_7')) {
+      newBadges.push({ name: 'streak_7', description: '7 day streak' });
     }
-    if (habit.streak >= 30 && !user.badges.includes('streak_30')) {
-      newBadges.push('streak_30');
+    if (habit.streak >= 30 && !userBadgeNames.includes('streak_30')) {
+      newBadges.push({ name: 'streak_30', description: '30 day streak' });
     }
-    if (habit.streak >= 100 && !user.badges.includes('streak_100')) {
-      newBadges.push('streak_100');
+    if (habit.streak >= 100 && !userBadgeNames.includes('streak_100')) {
+      newBadges.push({ name: 'streak_100', description: '100 day streak' });
     }
 
     if (newBadges.length > 0) {
@@ -186,20 +203,21 @@ router.get('/stats/overview', auth, async (req, res) => {
     const habits = await Habit.find({ userId: req.user._id, isActive: true });
     
     const totalHabits = habits.length;
-    const totalStreak = habits.reduce((sum, h) => sum + h.streak, 0);
-    const longestStreak = Math.max(...habits.map(h => h.longestStreak), 0);
-    const totalCompletions = habits.reduce((sum, h) => sum + h.totalCompletions, 0);
+    const totalStreak = habits.reduce((sum, h) => sum + (h.streak || 0), 0);
+    const longestStreak = habits.length > 0 ? Math.max(...habits.map(h => h.longestStreak || 0), 0) : 0;
+    const totalCompletions = habits.reduce((sum, h) => sum + (h.totalCompletions || 0), 0);
 
     // Today's completion
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todayCompleted = habits.filter(h => 
-      h.completions.some(c => {
+    const todayCompleted = habits.filter(h => {
+      if (!h.completions || h.completions.length === 0) return false;
+      return h.completions.some(c => {
         const cDate = new Date(c.date);
         cDate.setHours(0, 0, 0, 0);
         return cDate.getTime() === today.getTime();
-      })
-    ).length;
+      });
+    }).length;
 
     res.json({
       totalHabits,

@@ -321,10 +321,13 @@ router.post('/generate', auth, async (req, res) => {
     // Validate and fix any stringified array fields
     const fixedPlanData = validateAndFixPlanData(planData);
 
-    // Create new plan
+    // Create new plan - add title if not present
+    const planTitle = `${goals.join(', ')} Plan`;
     console.log('Creating new plan with data:', JSON.stringify(fixedPlanData, null, 2));
     const plan = new WellnessPlan({
       userId: req.user._id,
+      title: planTitle,
+      description: `A ${fitnessLevel || 'beginner'} wellness plan focused on: ${goals.join(', ')}`,
       goals: goals,
       ...fixedPlanData
     });

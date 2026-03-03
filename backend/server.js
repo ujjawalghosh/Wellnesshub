@@ -41,6 +41,16 @@ const habitRoutes = require('./routes/habits');
 const challengeRoutes = require('./routes/challenges');
 const breakRoutes = require('./routes/breaks');
 const analyticsRoutes = require('./routes/analytics');
+// New feature routes
+const waterRoutes = require('./routes/water');
+const sleepRoutes = require('./routes/sleep');
+const moodRoutes = require('./routes/mood');
+const bodyRoutes = require('./routes/body');
+const nutritionRoutes = require('./routes/nutrition');
+const pomodoroRoutes = require('./routes/pomodoro');
+const meditationRoutes = require('./routes/meditation');
+const friendsRoutes = require('./routes/friends');
+const affirmationsRoutes = require('./routes/affirmations');
 
 const app = express();
 
@@ -100,6 +110,16 @@ app.use('/api/habits', habitRoutes);
 app.use('/api/challenges', challengeRoutes);
 app.use('/api/breaks', breakRoutes);
 app.use('/api/analytics', analyticsRoutes);
+// New feature routes
+app.use('/api/water', waterRoutes);
+app.use('/api/sleep', sleepRoutes);
+app.use('/api/mood', moodRoutes);
+app.use('/api/body', bodyRoutes);
+app.use('/api/nutrition', nutritionRoutes);
+app.use('/api/pomodoro', pomodoroRoutes);
+app.use('/api/meditation', meditationRoutes);
+app.use('/api/friends', friendsRoutes);
+app.use('/api/affirmations', affirmationsRoutes);
 
 // Health check
 app.get('/api/health', async (req, res) => {
