@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "frontend/dist/index.html",
+      "src": "frontend/dist",
       "use": "@vercel/static"
     }
   ],
@@ -14,6 +14,9 @@
     {
       "src": "/api/(.*)",
       "destination": "/backend/server.js"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
