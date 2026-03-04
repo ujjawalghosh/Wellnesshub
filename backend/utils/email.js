@@ -24,17 +24,33 @@ const sendEmail = async (to, subject, text) => {
     });
     
     console.log(`Email sent to ${to}`);
-    return true;
+    return { success: true };
   } catch (error) {
     console.error('Email error:', error);
-    return false;
+    return { success: false, error: error.message };
   }
 };
 
-// Send OTP email
-const sendOTPEmail = async (email, otp) => {
-  const subject = 'Your WellnessHub OTP';
-  const text = `Your OTP code is: ${otp}. This code expires in 10 minutes.`;
+// Send OTP email (supports different types: login, verification, 2fa)
+const sendOTPEmail = async (email, otp, type = 'login') => {
+  let subject = 'Your WellnessHub OTP';
+  let text = '';
+  
+  switch (type) {
+    case 'verification':
+      subject = 'Verify your WellnessHub Email';
+      text = `Your verification code is: ${otp}. This code expires in 10 minutes.`;
+      break;
+    case '2fa':
+      subject = 'Your WellnessHub 2FA Code';
+      text = `Your 2FA code is: ${otp}. This code expires in 10 minutes.`;
+      break;
+    case 'login':
+    default:
+      subject = 'Your WellnessHub OTP';
+      text = `Your OTP code is: ${otp}. This code expires in 10 minutes.`;
+  }
+  
   return sendEmail(email, subject, text);
 };
 
