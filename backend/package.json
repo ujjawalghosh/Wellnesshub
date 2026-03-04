@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "WellnessHub Backend API",
   "main": "server.js",
-"scripts": {
+  "scripts": {
     "start": "node server.js",
-    "dev": "nodemon -r dotenv/config server.js"
+    "dev": "nodemon -r dotenv/config server.js",
+    "vercel-build": "echo 'Backend build complete'"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
