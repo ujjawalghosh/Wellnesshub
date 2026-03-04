@@ -90,22 +90,22 @@ initDB().then(() => {
   console.log('Database initialization complete');
 });
 
-// API Routes - Note: Vercel rewrites /api/* to /api/index.js, so we mount at root
-app.use('/auth', authRoutes);
-app.use('/plans', planRoutes);
-app.use('/habits', habitRoutes);
-app.use('/challenges', challengeRoutes);
-app.use('/breaks', breakRoutes);
-app.use('/analytics', analyticsRoutes);
-app.use('/water', waterRoutes);
-app.use('/sleep', sleepRoutes);
-app.use('/mood', moodRoutes);
-app.use('/body', bodyRoutes);
-app.use('/nutrition', nutritionRoutes);
-app.use('/pomodoro', pomodoroRoutes);
-app.use('/meditation', meditationRoutes);
-app.use('/friends', friendsRoutes);
-app.use('/affirmations', affirmationsRoutes);
+// API Routes - mounted under /api prefix
+app.use('/api/auth', authRoutes);
+app.use('/api/plans', planRoutes);
+app.use('/api/habits', habitRoutes);
+app.use('/api/challenges', challengeRoutes);
+app.use('/api/breaks', breakRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/water', waterRoutes);
+app.use('/api/sleep', sleepRoutes);
+app.use('/api/mood', moodRoutes);
+app.use('/api/body', bodyRoutes);
+app.use('/api/nutrition', nutritionRoutes);
+app.use('/api/pomodoro', pomodoroRoutes);
+app.use('/api/meditation', meditationRoutes);
+app.use('/api/friends', friendsRoutes);
+app.use('/api/affirmations', affirmationsRoutes);
 
 // Health check endpoint
 app.get('/health', async (req, res) => {
