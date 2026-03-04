@@ -19,11 +19,11 @@
       "dest": "/backend/server.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/frontend/dist/index.html"
+      "handle": "filesystem"
     },
     {
-      "handle": "filesystem"
+      "src": "/(.*)",
+      "dest": "/frontend/dist/index.html"
     },
     {
       "src": "/",
@@ -49,6 +49,6 @@
       ]
     }
   ],
-  "installCommand": "npm install --prefix frontend && npm install --prefix backend"
+  "installCommand": "cd frontend && npm install && cd ../backend && npm install"
 }
 
