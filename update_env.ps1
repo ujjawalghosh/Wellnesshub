@@ -1,7 +1,7 @@
 # PowerShell script to update Vercel environment variables for backend
 
-# MongoDB Connection String
-$mongoURI = "mongodb+srv://Ujjawal:ujjawal_ghosh1@cluster0.d2pmppm.mongodb.net/?appName=Cluster0"
+# MongoDB Connection String (NOTE: Password contains @ which needs to be encoded as %40)
+$mongoURI = "mongodb+srv://Ujjawal:ujjawal_ghosh1%40@cluster0.d2pmppm.mongodb.net/?appName=Cluster0"
 
 # JWT Secret
 $jwtSecret = "wellnesshub_jwt_secret_key_2024"
@@ -23,4 +23,4 @@ echo $jwtSecret | vercel env add JWT_SECRET production
 Set-Location ..
 
 Write-Host "Environment variables set successfully!"
-Write-Host "Now redeploy the backend with: vercel --prod --cwd backend"
+Write-Host "Now redeploy with: vercel --prod"
