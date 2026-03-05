@@ -1,5 +1,6 @@
 // Load dotenv FIRST at the very top, before any other imports
-require('dotenv').config();
+// Explicitly load from the backend directory
+require('dotenv').config({ path: __dirname + '/.env' });
 
 const path = require('path');
 const fs = require('fs');

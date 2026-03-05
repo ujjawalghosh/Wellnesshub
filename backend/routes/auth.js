@@ -1,16 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 const { sendOTPEmail, sendWelcomeEmail } = require('../utils/email');
 
 // Generate JWT token
+// Use a consistent secret - same as server.js defaults
 const generateToken = (userId) => {
+  const secret = process.env.JWT_SECRET || 'wellnesshub_jwt_secret_key_2024';
   return jwt.sign(
     { userId },
-    process.env.JWT_SECRET || 'wellnesshub_secret_key',
+    secret,
     { expiresIn: '30d' }
   );
 };
@@ -102,6 +105,12 @@ router.post('/login', [
 
     console.log('Login attempt:', { email });
 
+    // Check MongoDB connection before proceeding
+    if (mongoose.connection.readyState !== 1) {
+      console.error('MongoDB not connected. Connection state:', mongoose.connection.readyState);
+      return res.status(503).json({ message: 'Database not available. Please try again later.' });
+    }
+
     // Find user
     const user = await User.findOne({ email });
     if (!user) {
@@ -152,6 +161,8 @@ router.post('/login', [
       errorMessage = 'Database error: ' + error.message;
     } else if (error.name === 'ValidationError') {
       errorMessage = 'Validation error: ' + error.message;
+    } else if (error.name === 'CastError') {
+      errorMessage = 'Invalid data format';
     } else {
       errorMessage = error.message;
     }

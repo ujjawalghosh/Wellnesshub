@@ -18,9 +18,9 @@ const connectDB = async () => {
       return true;
     }
     
+    // Note: useNewUrlParser and useUnifiedTopology are deprecated in MongoDB Node.js Driver 4.0+
+    // They have no effect now and will be removed in next major version
     const conn = await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });
