@@ -13,19 +13,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/server.js"
-    },
-    {
-      "src": "/(.*)\\.(js|css|woff|woff2|ttf|eot|svg|png|jpg|jpeg|gif|ico)",
-      "dest": "/frontend/dist/$1"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/frontend/dist/assets/$1"
-    },
-    {
-      "src": "/favicon.svg",
-      "dest": "/frontend/dist/favicon.svg"
+      "dest": "/backend/server.js"
     },
     {
       "src": "/(.*)",
@@ -33,4 +21,3 @@
     }
   ]
 }
-
