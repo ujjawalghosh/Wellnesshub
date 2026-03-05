@@ -185,8 +185,8 @@ app.use((err, req, res, next) => {
 // Export for Vercel serverless function
 module.exports = app;
 
-// Start server only when run directly (not when imported by Vercel)
-if (require.main === module) {
+// For local development
+if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
