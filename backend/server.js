@@ -25,9 +25,6 @@ console.log('Is Vercel:', isVercel);
 // Debug: Print MONGODB_URI if loaded
 console.log('MONGODB_URI present:', !!process.env.MONGODB_URI);
 console.log('JWT_SECRET present:', !!process.env.JWT_SECRET);
-if (!process.env.MONGODB_URI) {
-  console.log('Available env vars with MON/JWT/PORT:', Object.keys(process.env).filter(k => k.includes('MON') || k.includes('JWT') || k.includes('PORT')));
-}
 
 const express = require('express');
 const cors = require('cors');
@@ -56,10 +53,12 @@ const app = express();
 
 // Track MongoDB connection status
 let isDBConnected = false;
+let dbConnectionAttempted = false;
 
 // Initialize database connection
 const initDB = async () => {
-  if (isDBConnected) return;
+  if (dbConnectionAttempted && isDBConnected) return;
+  dbConnectionAttempted = true;
   
   if (process.env.MONGODB_URI) {
     const connected = await connectDB();
@@ -91,7 +90,7 @@ const initDB = async () => {
   }
 };
 
-// Initialize database connection
+// Initialize database connection immediately
 initDB();
 
 // CORS configuration - Allow all origins for development
@@ -102,6 +101,15 @@ app.use(cors({
   credentials: false
 }));
 app.use(express.json());
+
+// Middleware to ensure DB is connected before processing requests
+app.use(async (req, res, next) => {
+  if (!isDBConnected && process.env.MONGODB_URI) {
+    console.log('Attempting to reconnect to database...');
+    await initDB();
+  }
+  next();
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -124,13 +132,10 @@ app.use('/api/affirmations', affirmationsRoutes);
 // Health check
 app.get('/api/health', async (req, res) => {
   const mongoURIpresent = !!process.env.MONGODB_URI;
-  console.log('MONGODB_URI present:', mongoURIpresent);
   
   if (!isDBConnected && process.env.MONGODB_URI) {
     console.log('Attempting to connect to MongoDB...');
     await initDB();
-  } else if (!process.env.MONGODB_URI) {
-    console.log('MONGODB_URI not found in environment');
   }
   
   res.json({ 
@@ -139,13 +144,7 @@ app.get('/api/health', async (req, res) => {
     database: isDBConnected ? 'connected' : 'disconnected',
     debug: {
       mongoURIpresent: mongoURIpresent,
-      mongooseState: mongoose.connection.readyState,
-      mongooseStates: {
-        0: 'disconnected',
-        1: 'connected',
-        2: 'connecting',
-        3: 'disconnecting'
-      }
+      mongooseState: mongoose.connection.readyState
     }
   });
 });
@@ -192,3 +191,4 @@ if (!process.env.VERCEL) {
     console.log(`Server running on port ${PORT}`);
   });
 }
+
