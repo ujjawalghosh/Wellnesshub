@@ -120,8 +120,8 @@ router.post('/login', [
 
     console.log('Password matched, updating last active...');
 
-    // Update last active
-    user.lastActive = Date.now();
+    // Update last active date
+    user.lastActiveDate = Date.now();
     await user.save();
 
     const token = generateToken(user._id);
@@ -299,7 +299,7 @@ router.post('/verify-otp', [
 
     // Clear OTP after successful verification
     user.clearOTP();
-    user.lastActive = Date.now();
+    user.lastActiveDate = Date.now();
     await user.save();
 
     const token = generateToken(user._id);
@@ -618,7 +618,7 @@ router.post('/login-with-2fa', [
       user.clearOTP();
     }
 
-    user.lastActive = Date.now();
+    user.lastActiveDate = Date.now();
     await user.save();
 
     const token = generateToken(user._id);
