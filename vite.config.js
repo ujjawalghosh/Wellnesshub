@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   const backendUrl = env.VITE_API_URL || 'http://localhost:5000'
   
   return {
+    base: './',  // Important for Vercel production build
     plugins: [react()],
     server: {
       port: 5173,

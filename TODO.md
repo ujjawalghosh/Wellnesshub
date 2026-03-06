@@ -1,20 +1,20 @@
-# TODO: Fix Vercel 404 Error and Login Issues - COMPLETED ✅
+# TODO: Fix Vercel Deployment Issues
 
-## Issues Fixed:
-1. **404 Error**: Fixed root vercel.json routing configuration
-2. **Login not working**: Backend API routing now properly configured
+## Step 1: Fix Root vite.config.js - Add base: './'
+- [x] Add base configuration for production build
 
-## Changes Made:
-- Updated vercel.json with correct routes for API and frontend
-- Removed conflicting vercel.json files
-- Properly configured backend serverless function
+## Step 2: Fix Root vercel.json - Correct build paths
+- [x] Update build configuration to use correct paths
 
-## Deployment Status:
-- ✅ Production deployed successfully
-- ✅ Alias set to: https://wellnesshub-pi.vercel.app
+## Step 3: Verify frontend configuration
+- [x] Check frontend vite.config.js
+- [x] Check frontend vercel.json
 
-## Test the app:
-1. Open: https://wellnesshub-pi.vercel.app
-2. Try login/register
-3. All features should work now!
+## Step 4: Build and Deploy
+- [ ] Build frontend locally
+- [ ] Deploy to Vercel
+
+## Step 5: Test
+- [ ] Verify 404 error is resolved
+- [ ] Test API endpoints
 
