@@ -83,8 +83,8 @@ export default function Layout({ children }) {
             </div>
           </div>
         </header>
-        
-        <main className="p-4 md:p-6 pt-24">
+
+        <main className="p-4 md:p-6 pt-28">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
