@@ -84,7 +84,7 @@ export default function Layout({ children }) {
       </header>
 
       {/* Main Content - With left margin for sidebar */}
-      <main className="pt-24 px-4 md:px-6 pb-6 lg:ml-64 ml-0 transition-all duration-300">
+      <main className="pt-32 px-4 md:px-6 pb-6 lg:ml-64 ml-0 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
           {children}
         </div>
