@@ -20,7 +20,7 @@ export default function Header({ onMenuClick }) {
   const pageTitle = pageTitles[location.pathname] || 'WellnessHub'
 
   return (
-    <header className="fixed top-0 right-0 left-0 lg:left-64 h-20 bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 z-40">
+    <header className="fixed top-0 right-0 left-0 h-20 bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 z-40">
       <div className="h-full px-4 lg:px-6 flex items-center justify-between">
         {/* Left - Menu & Title */}
         <div className="flex items-center gap-3">
