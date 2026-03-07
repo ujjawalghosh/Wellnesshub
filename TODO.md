@@ -1,20 +1,33 @@
-# Deployment Fix Plan
+# Login 400 Error Fix - TODO
 
-## Task: Fix Vercel deployment for WellnessHub
+## Task: Fix login 400 Bad Request error
 
-### Current Issues Identified:
-1. Root vercel.json has complex multi-build configuration
-2. Need to properly configure backend and frontend for Vercel
-3. Need to handle API routes properly
+### Steps:
+- [x] 1. Analyze codebase to identify root cause
+- [x] 2. Fix backend/routes/auth.js - Update nested field paths
+- [ ] 3. Check frontend/src/utils/api.js - Verify production API URL (optional)
+- [ ] 4. Redeploy backend to Render
+- [ ] 5. Test login functionality
 
-### Plan:
-1. [x] Analyze existing vercel.json configurations
-2. [x] Create proper root vercel.json for monorepo setup
-3. [x] Create api/index.js for Vercel serverless API
-4. [x] Create api/package.json for API dependencies
-5. [x] Deploy to Vercel
+## Root Cause:
+In `backend/routes/auth.js`, the code accessed `user.goals` and `user.fitnessLevel` directly, but these fields are nested inside `wellnessProfile` in the User model.
 
-### Deployment Complete!
-- Frontend deployed successfully
-- Production URL: https://wellnesshub-18ziklhbr-ujjawalghoshs-projects.vercel.app
-- Aliased URL: https://wellnesshub-pi.vercel.app
+## Fixes Applied:
+Changed all occurrences of:
+- `user.goals` → `user.wellnessProfile?.goals || []`
+- `user.fitnessLevel` → `user.wellnessProfile?.fitnessLevel || 'beginner'`
+- `req.user.preferences` → `req.user.wellnessProfile?.preferences || {}`
+
+Fixed in these routes:
+- POST /register
+- POST /login  
+- GET /me
+- POST /verify-otp
+- POST /verify-email
+- POST /login-with-2fa
+
+## Next Steps:
+1. Deploy backend to Render: `git add . && git commit -m "Fix login 400 error" && git push`
+2. Wait for deployment to complete
+3. Test login on the website
+
